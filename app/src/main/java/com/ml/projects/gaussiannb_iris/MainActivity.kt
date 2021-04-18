@@ -13,14 +13,22 @@ import com.google.android.material.textfield.TextInputEditText
 import com.ml.projects.gaussiannb_iris.data.DataFrame
 import com.ml.projects.gaussiannb_iris.data.FeatureColumn
 
+// Welcome
+// If you've started from the MainActivity, you may view each class in the following order,
+// 1. FeatureColumn.kt
+// 2. DataFrame.kt
+// 3. GaussianNB.kt
 class MainActivity : AppCompatActivity() {
 
+    // View elements to take the inputs and display it to the user.
     private lateinit var sampleInputEditText : TextInputEditText
     private lateinit var outputTextView : TextView
-    private lateinit var predictButton : Button
 
+    // DataFrame object which will hold the data.
     private lateinit var dataFrame: DataFrame
 
+    // GaussianNB object to perform the calculations and return
+    // the predictions.
     private lateinit var gaussianNB: GaussianNB
 
 
@@ -28,52 +36,56 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView( R.layout.activity_main )
 
+        // Initialize the View elements
         sampleInputEditText = findViewById( R.id.sample_input_editText )
-        predictButton = findViewById( R.id.predict_button )
         outputTextView = findViewById( R.id.output_textView )
 
-        sampleInputEditText.addTextChangedListener{ object : TextWatcher {
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                predictButton.isEnabled = s?.length != 0
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                TODO("Not yet implemented")
-            }
-
-        }}
-
+        // Initialize the DataFrame object.
+        // The file iris_ds.csv is kept in the assets folder of the app.
         dataFrame = DataFrame( this , "iris_ds.csv" )
 
     }
 
-    private val readCSVCallback = object : DataFrame.ReadCSVCallback{
-        override fun onCSVProcessed(processedData: Array<FeatureColumn>, labels: Array<String>) {
-            Toast.makeText( this@MainActivity , "CSV File loaded." , Toast.LENGTH_LONG ).show()
-            gaussianNB = GaussianNB( dataFrame )
-        }
-    }
-
-    private val resultCallback = object : GaussianNB.ResultCallback {
-        override fun onPredictionResult(label: String, probs: FloatArray) {
-            outputTextView.text = "Label : $label \n Prob : ${probs.contentToString()}"
-        }
-    }
-
+    // Called when predict_button is clicked. ( See activity_main.xml ).
     fun onPredictButtonClick( view : View ) {
+        // Split the String by ","
         var strX = sampleInputEditText.text.toString().split( "," ).toTypedArray()
         strX = strX.map{ xi -> xi.trim() }.toTypedArray()
+        // Convert the String[] to float[]
         val x = dataFrame.convertStringArrayToFloatArray( strX )
+        // Predict the class with GaussianNB.
         gaussianNB.predict( x , resultCallback )
     }
 
+    // Called when load_data_button is clicked. ( See activity_main.xml ).
     fun onLoadCSVButtonClick( view : View ) {
+        // Load the CSV file.
         dataFrame.readCSV( readCSVCallback )
+    }
+
+    // Called when the CSV data has been processed.
+    private val readCSVCallback = object : DataFrame.ReadCSVCallback{
+
+        override fun onCSVProcessed(processedData: Array<FeatureColumn>, labels: Array<String>) {
+            // Notify the user that the data has been processed.
+            Toast.makeText( this@MainActivity , "CSV File loaded." , Toast.LENGTH_LONG ).show()
+            // Initialize the GaussianNB object.
+            // We initialize it here because it accesses some variables in dataFrame which are only initialized
+            // when this method ( onCSVProcessed ) is called.
+            gaussianNB = GaussianNB( dataFrame )
+        }
+
+    }
+
+    // Called when all calculations are done and the results could be processed
+    // further.
+    private val resultCallback = object : GaussianNB.ResultCallback {
+
+        override fun onPredictionResult(label: String, probs: FloatArray) {
+            // Display the output to the user via outputTextView.
+            outputTextView.text = "Label : $label \n Prob : ${probs.contentToString()}"
+        }
+
     }
 
 }

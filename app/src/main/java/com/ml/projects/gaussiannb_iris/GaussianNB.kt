@@ -6,10 +6,15 @@ import kotlin.math.log10
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+// Class to implement Gaussian Naive Bayes
 class GaussianNB( private var dataFrame : DataFrame ) {
 
+    // Array to store Gaussian Distributions for each feature.
     private var featureDistributions : Array<GaussianDistribution>
+
+    // Prior probabilities stored in a HashMap of form ( column_name , prior_prob )
     private var priorProbabilities : HashMap<String,Float>
+
     private var resultCallback : ResultCallback? = null
 
     init {
@@ -21,32 +26,36 @@ class GaussianNB( private var dataFrame : DataFrame ) {
         }
         featureDistributions = GDs.toTypedArray()
 
-        // Compute prior probabilities and store them in `priorProbabilites`.
+        // Compute prior probabilities and store them in `priorProbabilities`.
         priorProbabilities = computePriorProbabilities( dataFrame.labels )
-        println( priorProbabilities.toString() )
-
-        println( predictLabel( floatArrayOf( 5.1f , 3.5f , 1.4f , 0.2f )) )
 
     }
 
+    // Predict the label for the given sample.
     fun predict( x : FloatArray , resultCallback: ResultCallback ) {
         this.resultCallback = resultCallback
         predictLabel( x )
     }
 
+    // Callback to check whether the calculations are done.
     interface ResultCallback {
         fun onPredictionResult( label : String , probs : FloatArray )
     }
 
+    // Predict the label for the given sample.
     private fun predictLabel( sample : FloatArray ) {
         val probArray = FloatArray( dataFrame.numClasses )
         for ( ( i , priorProb ) in priorProbabilities.values.withIndex()) {
+            // We take the log probabilities so as to avoid underflow.
             var p = log10( priorProb )
+            // While we take log, the product is transformed into a sum
+            // log( a . b ) = log(a) + log(b)
             for ( j in 0 until dataFrame.numFeatures ) {
                 p += featureDistributions[ j ].getLogProb( sample[ i ] )
             }
             probArray[ i ] = p
         }
+        // Get the label with highest probability.
         val label = priorProbabilities.keys.toTypedArray()[ probArray.indexOf( probArray.max()!!) ]
         resultCallback?.onPredictionResult( label , probArray )
     }

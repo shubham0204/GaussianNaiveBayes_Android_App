@@ -1,21 +1,45 @@
+# Gaussian Naive Bayes in Android : Iris Classification Problem
 
-# Gaussian Naive Bayes in Android : Iris Classification Problem 
+![](images/app.png)
+
 This project aims to create a Gaussian Naive Bayes classifier in Android and use it on the famous [Iris dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set). Gaussian Naive Bayes is a different version of commonly used Naive Bayes classifier, as it deals with numerical features.
 
 We assume that each numerical feature in our dataset, follows a Gaussian distribution, with the mean and standard deviation calculated from that feature itself. 
 
-## The Math
-Suppose we are given a dataset $D$  with $N_f$ features, where each sample belongs to one of the $N_c$ classes. Our job is to predict the class of a given sample $X$, where $X=\{ x_i \} \ , 1 \leq i \leq N_f$ . 
+The app uses [Opencsv](http://opencsv.sourceforge.net/) to parse the dataset in CSV format ( from the app's `assets` folder ).
 
-First, we compute the prior probabilities $p(c_j) \ , 1 \leq j \leq N_c$. The prior probability of class $c_j$ equals the probability that a given sample from our dataset belongs to class $c_j$.
+## Use your own dataset
 
-$p(c_j) = \frac{n( c_j )}{n( D )} \ \ \ 1 \leq j \leq N_c$
+You may use your dataset in the app. Keep the following points in mind, so as to provide a clean dataset to the algorithm,
 
-where $n( c_j )$ is the no. of samples belonging to class $c_j$ and $n( D )$ is the no. of samples in our dataset $D$.
+1. The dataset should be in the **CSV format** and should be placed in the app's `assets` folder.
+2. The **first row** should contain only **names of the columns**. Like in this case of the Iris dataset, the first row contains `sepal_length,sepal_width,petal_length,petal_width,species`.
+3. The **last column** in the CSV file should correspond to the **labels column**, just as we have the `species` column in the Iris dataset.
+4. The **labels column** should contain all labels as **Strings only**. Like in the Iris dataset, the `species` colun contains three distinct Strings ( classes ), `setosa, versicolor, virginica`. **All other columns, except the labels column** should contain only **numerical features**. ( Just as the Iris dataset has `sepal_length,sepal_width,petal_length,petal_width` columns ). 
+5. **Clean the dataset if it has null values in any of the columns**. Null/blank values in any of the columns could cause an error.
 
-As I mentioned earlier, we assume that each feature follows a Gaussian Distribution, where the likelihood of a feature $x_i$ given a class $c_j$ is,
+Follow the same format as the Iris dataset.
 
-$L(x=x_i | c_j ) = \frac{1}{\sigma \sqrt{2 \pi}} \exp( - \frac{1}{2} (\frac{x - \mu}{ \sigma})^2)$
+## License
 
+```
+MIT License
 
-$p( c_j|sample ) = p(c_j) \ \prod_{i=1}^N \ L( x=x_i| c_j )$
+Copyright (c) 2021 Shubham Panchal
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

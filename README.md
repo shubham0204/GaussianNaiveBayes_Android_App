@@ -1,6 +1,6 @@
 # Gaussian Naive Bayes in Android : Iris Classification Problem
 
-![](images/app.png)
+![](images/app_gif.gif)
 
 This project aims to create a Gaussian Naive Bayes classifier in Android and use it on the famous [Iris dataset](https://en.wikipedia.org/wiki/Iris_flower_data_set). Gaussian Naive Bayes is a different version of commonly used Naive Bayes classifier, as it deals with numerical features.
 
